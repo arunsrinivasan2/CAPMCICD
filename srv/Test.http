@@ -1,0 +1,2 @@
+GET http://localhost:4004/catalog/Products
+Content-Type: application/json;odata.metadata=minimal

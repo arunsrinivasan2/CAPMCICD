@@ -1,0 +1,85 @@
+_schema-version: "3.1"
+ID: demoProject
+description: A simple CAP project.
+version: 1.0.0
+modules:
+  - name: demoProject-srv
+    type: nodejs
+    path: gen/srv
+    requires:
+      - name: demoProject-destination
+      - name: uaa_demoProject
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+    parameters:
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm
+  - name: demoProject-app-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: demoProject_html_repo_host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - demoproject.zip
+          name: demoproject
+          target-path: resources/
+  - name: demoproject
+    type: html5
+    path: app/demoproject
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms:
+        []
+resources:
+  - name: demoProject-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        HTML5Runtime_enabled: false
+        init_data:
+          instance:
+            destinations:
+              - Authentication: NoAuthentication
+                Name: ui5
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://ui5.sap.com
+            existing_destinations_policy: update
+      service: destination
+      service-plan: lite
+  - name: demoProject_html_repo_host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-name: demoProject-html5-app-host-service
+      service-plan: app-host
+  - name: uaa_demoProject
+    type: org.cloudfoundry.managed-service
+    parameters:
+      path: ./xs-security.json
+      service: xsuaa
+      service-name: demoProject-xsuaa-service
+      service-plan: application
+      config:
+        xsappname: demoProject-${org}-${space}
+        tenant-mode: dedicated
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npx cds build --production
