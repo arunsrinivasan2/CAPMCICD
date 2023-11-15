@@ -82,4 +82,4 @@ build-parameters:
   before-all:
     - builder: custom
       commands:
-        - npx  build --production
+        - npx cds build --production

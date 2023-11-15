@@ -7,9 +7,12 @@ node(){
       setupCommonPipelineEnvironment script:this
   }
 
-  stage('Build')   {
-      mtaBuild script:this
-  }
+  stage('Build') {
+      steps {
+        sh 'npm install'
+         sh 'npm install -g @sap/cds'
+      }
+    }  
 
   stage('Deploy')   {
       cloudFoundryDeploy script:this, deployTool:'mtaDeployPlugin'
