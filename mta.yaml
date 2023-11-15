@@ -83,3 +83,4 @@ build-parameters:
     - builder: custom
       commands:
         - npx cds build --production
+        - npm install -g @sap/cds
