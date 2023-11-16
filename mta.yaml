@@ -84,3 +84,8 @@ build-parameters:
       commands:
         - npx cds build --production
         - npm install -g @sap/cds
+        - npx -p @SAP/cds-dk cds build --production
+        - npm install @SAP-cloud-sdk/http-client
+        - npm update --package-lock-only
+        - npm clean-install --production
+        - npm install
